@@ -1,5 +1,5 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
+import { sleep, check } from 'k6';
 
 export const options = {
   // Define the number of iterations for the test
@@ -19,7 +19,11 @@ const payload = JSON.stringify({
     },
   };
 
-  http.post(url, payload, params);
+  const res = http.post(url, payload, params);
+  check (res, {
+    'Validar que o status é 200':(r) => r.status === 200,
+    'Validar que Token é string':(r) => typeof(r.json().token) == 'string'
+});
   sleep(1);
 }
 
